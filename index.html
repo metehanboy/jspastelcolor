@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    
+    <title>pastel color generator - gradient</title>
+    
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<link href="box.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h1>Tıklayıver Biyerlere :)</h1>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        
+        <section class="section-preview text-center">
+
+        <!-- Grid row -->
+        <div class="row mt-4">
+
+        </div>
+
+        <!-- Grid row -->
+
+    </section>
+        
+    </div>
+
+    <script>
+        function hsl2Hex(h, s, l) {
+            h /= 360;
+            s /= 100;
+            l /= 100;
+            let r, g, b;
+            if (s === 0) {
+                r = g = b = l; // achromatic
+            } else {
+                const hue2rgb = (p, q, t) => {
+                    if (t < 0) t += 1;
+                    if (t > 1) t -= 1;
+                    if (t < 1 / 6) return p + (q - p) * 6 * t;
+                    if (t < 1 / 2) return q;
+                    if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+                    return p;
+                };
+                const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+                const p = 2 * l - q;
+                r = hue2rgb(p, q, h + 1 / 3);
+                g = hue2rgb(p, q, h);
+                b = hue2rgb(p, q, h - 1 / 3);
+            }
+            const toHex = x => {
+                const hex = Math.round(x * 255).toString(16);
+                return hex.length === 1 ? '0' + hex : hex;
+            };
+            return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+        }
+        var frame = [];
+        function SmoothScroll(hedef,sure){
+            /*if(frame.length > 0){
+                frame.forEach((frames) => {
+                   window.cancelAnimationFrame(frames);
+                });
+                frame = [];
+            }*/
+            var hedefKonum = hedef.getBoundingClientRect().top;
+            var baslangicNoktasi = window.pageYOffset;
+            var uzaklik = hedefKonum - baslangicNoktasi;
+            if(uzaklik < 0) uzaklik *= -1;
+            var baslangicZamani = null;
+            var kaydir = (suan) => {
+                if(baslangicZamani == null) baslangicZamani = suan;
+                var gecenSure = suan - baslangicZamani;
+                var run = animasyonFunc(gecenSure,baslangicNoktasi,uzaklik,sure);
+                window.scrollTo(0,run);
+                if(gecenSure < sure) frame.push(requestAnimationFrame(kaydir));
+            };
+            
+            var animasyonFunc = (t, b, c, d) => {
+                                                	return -c/2 * (Math.cos(Math.PI*t/d) - 1) + b;
+                                                };
+            frame.push(requestAnimationFrame(kaydir));
+        }
+    </script>
+
+    <script async>
+        var tick = 0;
+
+        function bg(counter) {
+
+            var rand = {
+                "ust": Math.random(),
+                "alt": Math.random()
+            };
+
+            var hsl = {
+                "ust": {
+                    "hue": (360 * rand.ust).toFixed(2),
+                    "saturation": (25 + 70 * rand.ust).toFixed(2),
+                    "lightness": (85 + 10 * rand.ust).toFixed(2),
+                    "degree": (rand.ust * 180).toFixed()
+                },
+                "alt": {
+                    "hue": (360 * rand.alt).toFixed(2),
+                    "saturation": (25 + 70 * rand.alt).toFixed(2),
+                    "lightness": (85 + 10 * rand.alt).toFixed(2),
+                    "degree": (rand.alt * 180).toFixed()
+                }
+            };
+            
+            var hslPack = {
+                "ust": "hsl(" + hsl.ust.hue + ',' + hsl.ust.saturation + '%,' + hsl.ust.lightness + '%)',
+                "alt": "hsl(" + hsl.alt.hue + ',' + hsl.alt.saturation + '%,' + hsl.alt.lightness + '%)',
+            };
+
+            var infoText = hsl2Hex(hsl.ust.hue, hsl.ust.saturation, hsl.ust.lightness) + " - " + hsl2Hex(hsl.alt.hue, hsl.alt.saturation, hsl.alt.lightness);
+            var degree = (parseInt(hsl.ust.degree)+parseInt(hsl.alt.degree));
+            var gradient = "background-image: linear-gradient("+degree+"deg,"+hslPack.ust+" 0,"+hslPack.alt+" 100%)"
+
+            template = '' +
+                '<div class="col-md-4 mb-4">' +
+                '<div class="color-block-5 mb-3 mx-auto rounded-circle z-depth-1-half" style="' + gradient + '"></div>' +
+                '<h5 class="no-select">' + infoText + '</h5>' +
+                '</div>';
+
+            var allRows = document.querySelectorAll("section .row");
+            var checkRow = (s) => {return Array.from(s).filter(x => x.childElementCount < 3).length > 0 ? true : false};
+            var findTarget = (s) => {return Array.from(s).filter(x => x.childElementCount < 3)[0];}
+            div = document.createElement('div'),
+            div.innerHTML = !checkRow(allRows) ? '<div class="row">'+template+'</div>' : template;
+            el = div.firstChild;
+
+            var target = checkRow(allRows) ? findTarget(allRows) : document.querySelector('.section-preview');
+            target.appendChild(el);
+            if(!checkRow(allRows)) SmoothScroll(el,500);
+            
+        }
+
+        /*
+            var j = 0;
+            interval = setInterval(() => {
+                j++;
+                bg(j);
+            }, 10000);
+        
+        */
+        
+        document.addEventListener("click",(e) => {
+            bg();
+        });
+        document.addEventListener("touchstart",(e) => {
+            bg();
+        });
+    </script>
+
+    <style>
+
+    </style>
+</body>
+
+</html>
